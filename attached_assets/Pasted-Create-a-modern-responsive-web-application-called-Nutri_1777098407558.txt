@@ -1,0 +1,158 @@
+Create a modern, responsive web application called **“NutritionGhar”**.
+
+## 🌟 Concept:
+
+NutritionGhar is a food-tech platform that connects users with homemakers (women cooking from home) to deliver healthy, hygienic, and authentic homemade food. The platform focuses on providing “ghar jaisa khana” to working professionals, students, fitness enthusiasts, elderly people, and corporate employees.
+
+---
+
+## 🎯 Main Features:
+
+### 1. 🔐 Authentication (Updated)
+
+* Login using **phone number (OTP-based login)**
+* Store user phone number for delivery communication
+* Assign unique user ID
+* Separate login for:
+
+  * Customers
+  * Homemakers (Home Chefs)
+
+---
+
+### 2. 🏠 Home Page
+
+* Attractive landing page with tagline:
+  “Healthy. Homemade. Heartfelt.”
+* Sections:
+
+  * About NutritionGhar
+  * How it works
+  * Benefits
+  * Call-to-action buttons (Order Now / Join as Cook)
+* **Search Bar (Important)**
+
+  * Search food items (e.g., dosa, meals, sprouts)
+
+---
+
+### 3. 🍽️ Food Menu Page (Enhanced)
+
+* Display meals with:
+
+  * Name
+  * Price
+  * Category (Veg, Non-veg, Diet, Gym, Elderly, Tiffins)
+  * Preparation time
+* Filter options:
+
+  * Healthy / Protein / Low-calorie / Tiffins
+* Add to cart functionality
+
+👉 Include **Healthy Homemade Tiffins**:
+
+* Ragi Java
+* Sprouts Salad
+* Idli / Dosa
+* Upma / Poha
+* Protein Breakfast meals
+
+---
+
+### 4. 🛒 Order System (Enhanced)
+
+* Cart page
+* Checkout page
+* Address input
+* Phone number confirmation
+* Payment option (mock/demo)
+* Order confirmation
+* **Estimated Delivery Time Display (e.g., 30–45 mins)**
+
+---
+
+### 5. 👩‍🍳 Homemaker Dashboard
+
+* Register as a home chef
+* Add dishes (name, price, category, preparation time)
+* View orders
+* Accept/reject orders
+
+---
+
+### 6. 🚚 Delivery Tracking (Improved)
+
+* Order status:
+
+  * Preparing
+  * Out for delivery
+  * Delivered
+* Show **Estimated Time Remaining**
+* Provide **Call Customer Button (using phone number)**
+
+---
+
+### 7. 🏢 Corporate Orders
+
+* Bulk order option
+* Subscription meal plans (weekly/monthly)
+* Office delivery scheduling
+
+---
+
+### 8. 📊 User Dashboard
+
+* View order history
+* Manage profile (including phone number)
+* Subscription plans
+
+---
+
+### 9. 🌿 Eco-Friendly Feature
+
+* Show “Eco-friendly packaging” badge
+* Info section about sustainability
+* Highlight use of biodegradable packaging
+
+---
+
+## 🎨 UI Design Requirements:
+
+* Clean and modern UI
+* Use soft colors (green, orange, white)
+* Mobile responsive
+* Simple navigation bar
+* Cards for food items
+* Search bar at top
+* Buttons with smooth hover effects
+
+---
+
+## ⚙️ Tech Stack (Beginner Friendly):
+
+* Frontend: HTML, CSS, JavaScript (or React)
+* Backend: Node.js / Firebase (for OTP login)
+* Database: JSON / Firebase
+
+---
+
+## 📌 Extra Features (Optional):
+
+* Rating & review system
+* AI-based meal suggestions
+* Location-based nearby homemakers
+
+---
+
+## 🎯 Goal:
+
+Build a functional prototype that demonstrates:
+
+* User flow
+* Ordering system
+* Homemaker interaction
+* Clean UI for presentation/demo
+
+---
+
+Make the website simple, user-friendly, and visually appealing so it can be used for a college project or hackathon demo.

@@ -3,20 +3,31 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: NutritionGhar API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Phone OTP authentication
+  - name: dishes
+    description: Dish catalog
+  - name: orders
+    description: Customer orders
+  - name: chef
+    description: Homemaker dashboard
+  - name: subscriptions
+    description: Corporate meal subscriptions
+  - name: home
+    description: Home page surfaces
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +35,723 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/send-otp:
+    post:
+      operationId: sendOtp
+      tags: [auth]
+      summary: Send a one-time password to the phone number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendOtpInput"
+      responses:
+        "200":
+          description: OTP issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendOtpResult"
+
+  /auth/verify-otp:
+    post:
+      operationId: verifyOtp
+      tags: [auth]
+      summary: Verify OTP and start a session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyOtpInput"
+      responses:
+        "200":
+          description: Session established
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout the current user
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimpleSuccess"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get the current authenticated user
+      responses:
+        "200":
+          description: Current user (or null)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+
+  /auth/profile:
+    patch:
+      operationId: updateProfile
+      tags: [auth]
+      summary: Update current user's profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileInput"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /dishes:
+    get:
+      operationId: listDishes
+      tags: [dishes]
+      summary: List dishes (with optional search and filter)
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema: { type: string }
+        - name: category
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DishCategory"
+        - name: tag
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DishTag"
+        - name: chefId
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: Dish list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dish"
+
+  /dishes/{id}:
+    get:
+      operationId: getDish
+      tags: [dishes]
+      summary: Get one dish
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Dish
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+
+  /chef/dishes:
+    get:
+      operationId: listChefDishes
+      tags: [chef]
+      summary: List dishes owned by the current chef
+      responses:
+        "200":
+          description: Chef dish list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dish"
+    post:
+      operationId: createDish
+      tags: [chef]
+      summary: Create a dish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDishInput"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+
+  /chef/dishes/{id}:
+    patch:
+      operationId: updateDish
+      tags: [chef]
+      summary: Update a dish
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDishInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dish"
+    delete:
+      operationId: deleteDish
+      tags: [chef]
+      summary: Delete a dish
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimpleSuccess"
+
+  /chef/orders:
+    get:
+      operationId: listChefOrders
+      tags: [chef]
+      summary: List incoming orders for the current chef
+      responses:
+        "200":
+          description: Chef orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /chef/orders/{id}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [chef]
+      summary: Advance the status of one chef order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrderStatusInput"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /chef/stats:
+    get:
+      operationId: getChefStats
+      tags: [chef]
+      summary: Dashboard summary for the current chef
+      responses:
+        "200":
+          description: Chef stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChefStats"
+
+  /orders:
+    get:
+      operationId: listMyOrders
+      tags: [orders]
+      summary: List the current customer's orders
+      responses:
+        "200":
+          description: Order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderInput"
+      responses:
+        "200":
+          description: Created order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get one order (owner or assigned chef)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /subscriptions/plans:
+    get:
+      operationId: listSubscriptionPlans
+      tags: [subscriptions]
+      summary: List corporate / personal meal plans
+      responses:
+        "200":
+          description: Plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubscriptionPlan"
+
+  /subscriptions:
+    get:
+      operationId: listMySubscriptions
+      tags: [subscriptions]
+      summary: List the current user's subscriptions
+      responses:
+        "200":
+          description: Subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subscription"
+    post:
+      operationId: createSubscription
+      tags: [subscriptions]
+      summary: Subscribe to a plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionInput"
+      responses:
+        "200":
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /home/featured:
+    get:
+      operationId: getHomeFeatured
+      tags: [home]
+      summary: Featured dishes, top chefs and category counts for the home page
+      responses:
+        "200":
+          description: Home page surfaces
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HomeFeatured"
+
 components:
   schemas:
     HealthStatus:
       type: object
       properties:
-        status:
-          type: string
-      required:
-        - status
+        status: { type: string }
+      required: [status]
 
+    SimpleSuccess:
+      type: object
+      properties:
+        success: { type: boolean }
+      required: [success]
+
+    UserRole:
+      type: string
+      enum: [customer, chef]
+
+    DishCategory:
+      type: string
+      enum: [veg, non_veg, diet, gym, elderly, tiffin]
+
+    DishTag:
+      type: string
+      enum: [healthy, protein, low_calorie, tiffin]
+
+    OrderStatus:
+      type: string
+      enum: [placed, preparing, out_for_delivery, delivered, cancelled]
+
+    SubscriptionFrequency:
+      type: string
+      enum: [weekly, monthly]
+
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        phone: { type: string }
+        name: { type: string }
+        role:
+          $ref: "#/components/schemas/UserRole"
+        kitchenName: { type: string, nullable: true }
+        bio: { type: string, nullable: true }
+        address: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+      required: [id, phone, name, role, createdAt]
+
+    SendOtpInput:
+      type: object
+      properties:
+        phone: { type: string, minLength: 10 }
+      required: [phone]
+
+    SendOtpResult:
+      type: object
+      properties:
+        success: { type: boolean }
+        # Mock OTP for the demo - returned to client so users can see it
+        demoOtp: { type: string }
+      required: [success, demoOtp]
+
+    VerifyOtpInput:
+      type: object
+      properties:
+        phone: { type: string }
+        otp: { type: string }
+        role:
+          $ref: "#/components/schemas/UserRole"
+        name: { type: string }
+      required: [phone, otp, role]
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+      required: [user]
+
+    MeResponse:
+      type: object
+      properties:
+        user:
+          oneOf:
+            - $ref: "#/components/schemas/User"
+            - type: "null"
+      required: [user]
+
+    UpdateProfileInput:
+      type: object
+      properties:
+        name: { type: string }
+        kitchenName: { type: string }
+        bio: { type: string }
+        address: { type: string }
+
+    Dish:
+      type: object
+      properties:
+        id: { type: string }
+        chefId: { type: string }
+        chefName: { type: string }
+        kitchenName: { type: string, nullable: true }
+        name: { type: string }
+        description: { type: string }
+        price:
+          type: number
+          description: Price in INR
+        category:
+          $ref: "#/components/schemas/DishCategory"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/DishTag"
+        prepMinutes: { type: integer }
+        calories: { type: integer, nullable: true }
+        proteinGrams: { type: integer, nullable: true }
+        imageUrl: { type: string, nullable: true }
+        rating: { type: number }
+        reviewCount: { type: integer }
+        ecoFriendly: { type: boolean }
+        available: { type: boolean }
+        createdAt: { type: string, format: date-time }
+      required:
+        - id
+        - chefId
+        - chefName
+        - name
+        - description
+        - price
+        - category
+        - tags
+        - prepMinutes
+        - rating
+        - reviewCount
+        - ecoFriendly
+        - available
+        - createdAt
+
+    CreateDishInput:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        price: { type: number }
+        category:
+          $ref: "#/components/schemas/DishCategory"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/DishTag"
+        prepMinutes: { type: integer }
+        calories: { type: integer, nullable: true }
+        proteinGrams: { type: integer, nullable: true }
+        imageUrl: { type: string, nullable: true }
+        ecoFriendly: { type: boolean }
+        available: { type: boolean }
+      required: [name, description, price, category, prepMinutes]
+
+    UpdateDishInput:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        price: { type: number }
+        category:
+          $ref: "#/components/schemas/DishCategory"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/DishTag"
+        prepMinutes: { type: integer }
+        calories: { type: integer, nullable: true }
+        proteinGrams: { type: integer, nullable: true }
+        imageUrl: { type: string, nullable: true }
+        ecoFriendly: { type: boolean }
+        available: { type: boolean }
+
+    OrderItem:
+      type: object
+      properties:
+        dishId: { type: string }
+        dishName: { type: string }
+        quantity: { type: integer }
+        unitPrice: { type: number }
+      required: [dishId, dishName, quantity, unitPrice]
+
+    Order:
+      type: object
+      properties:
+        id: { type: string }
+        customerId: { type: string }
+        customerName: { type: string }
+        customerPhone: { type: string }
+        chefId: { type: string }
+        chefName: { type: string }
+        kitchenName: { type: string, nullable: true }
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        subtotal: { type: number }
+        deliveryFee: { type: number }
+        total: { type: number }
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        address: { type: string }
+        notes: { type: string, nullable: true }
+        estimatedMinutes: { type: integer }
+        placedAt: { type: string, format: date-time }
+        scheduledFor: { type: string, format: date-time, nullable: true }
+        isCorporate: { type: boolean }
+      required:
+        - id
+        - customerId
+        - customerName
+        - customerPhone
+        - chefId
+        - chefName
+        - items
+        - subtotal
+        - deliveryFee
+        - total
+        - status
+        - address
+        - estimatedMinutes
+        - placedAt
+        - isCorporate
+
+    CreateOrderItem:
+      type: object
+      properties:
+        dishId: { type: string }
+        quantity: { type: integer, minimum: 1 }
+      required: [dishId, quantity]
+
+    CreateOrderInput:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateOrderItem"
+        address: { type: string }
+        notes: { type: string }
+        isCorporate: { type: boolean }
+        scheduledFor: { type: string, format: date-time }
+      required: [items, address]
+
+    UpdateOrderStatusInput:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+      required: [status]
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        pricePerMeal: { type: number }
+        mealsPerWeek: { type: integer }
+        frequency:
+          $ref: "#/components/schemas/SubscriptionFrequency"
+        category:
+          $ref: "#/components/schemas/DishCategory"
+        forCorporate: { type: boolean }
+        highlights:
+          type: array
+          items: { type: string }
+      required:
+        - id
+        - name
+        - description
+        - pricePerMeal
+        - mealsPerWeek
+        - frequency
+        - category
+        - forCorporate
+        - highlights
+
+    Subscription:
+      type: object
+      properties:
+        id: { type: string }
+        userId: { type: string }
+        planId: { type: string }
+        planName: { type: string }
+        startDate: { type: string, format: date-time }
+        deliveryAddress: { type: string }
+        active: { type: boolean }
+      required: [id, userId, planId, planName, startDate, deliveryAddress, active]
+
+    CreateSubscriptionInput:
+      type: object
+      properties:
+        planId: { type: string }
+        deliveryAddress: { type: string }
+      required: [planId, deliveryAddress]
+
+    ChefStats:
+      type: object
+      properties:
+        totalOrders: { type: integer }
+        activeOrders: { type: integer }
+        deliveredOrders: { type: integer }
+        revenue: { type: number }
+        avgRating: { type: number }
+        topDishes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dish"
+      required:
+        - totalOrders
+        - activeOrders
+        - deliveredOrders
+        - revenue
+        - avgRating
+        - topDishes
+
+    CategoryCount:
+      type: object
+      properties:
+        category:
+          $ref: "#/components/schemas/DishCategory"
+        count: { type: integer }
+      required: [category, count]
+
+    HomeFeatured:
+      type: object
+      properties:
+        featuredDishes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dish"
+        topRatedDishes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dish"
+        topChefs:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        categoryCounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryCount"
+      required: [featuredDishes, topRatedDishes, topChefs, categoryCounts]

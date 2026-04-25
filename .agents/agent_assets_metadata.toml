@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "y2N3cnwjxJfj0JupRb1lR"
+uri = "file://artifacts/nutritionghar/public/images/hero.png"
+type = "image"
+title = "Warm Indian kitchen hero"
+
+[[generated]]
+id = "UOe5coaTwDBjIKgLHNadi"
+uri = "file://artifacts/nutritionghar/public/images/chef-portrait.png"
+type = "image"
+title = "Homely Indian cook portrait"
