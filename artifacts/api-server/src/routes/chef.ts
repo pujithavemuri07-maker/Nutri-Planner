@@ -14,9 +14,7 @@ import { serializeDish, serializeOrder } from "../lib/serializers";
 
 const router: IRouter = Router();
 
-router.use(attachUser, requireChef);
-
-router.get("/chef/dishes", async (req, res): Promise<void> => {
+router.get("/chef/dishes", attachUser, requireChef, async (req, res): Promise<void> => {
   const chef = req.currentUser!;
   const rows = await db
     .select()
@@ -30,7 +28,7 @@ router.get("/chef/dishes", async (req, res): Promise<void> => {
   );
 });
 
-router.post("/chef/dishes", async (req, res): Promise<void> => {
+router.post("/chef/dishes", attachUser, requireChef, async (req, res): Promise<void> => {
   const parsed = CreateDishBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -60,7 +58,7 @@ router.post("/chef/dishes", async (req, res): Promise<void> => {
   );
 });
 
-router.patch("/chef/dishes/:id", async (req, res): Promise<void> => {
+router.patch("/chef/dishes/:id", attachUser, requireChef, async (req, res): Promise<void> => {
   const params = UpdateDishParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -102,7 +100,7 @@ router.patch("/chef/dishes/:id", async (req, res): Promise<void> => {
   );
 });
 
-router.delete("/chef/dishes/:id", async (req, res): Promise<void> => {
+router.delete("/chef/dishes/:id", attachUser, requireChef, async (req, res): Promise<void> => {
   const params = DeleteDishParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -122,7 +120,7 @@ router.delete("/chef/dishes/:id", async (req, res): Promise<void> => {
   res.json({ success: true });
 });
 
-router.get("/chef/orders", async (req, res): Promise<void> => {
+router.get("/chef/orders", attachUser, requireChef, async (req, res): Promise<void> => {
   const chef = req.currentUser!;
   const rows = await db
     .select({ order: ordersTable, customer: usersTable })
@@ -133,7 +131,7 @@ router.get("/chef/orders", async (req, res): Promise<void> => {
   res.json(rows.map((r) => serializeOrder(r.order, r.customer, chef)));
 });
 
-router.patch("/chef/orders/:id/status", async (req, res): Promise<void> => {
+router.patch("/chef/orders/:id/status", attachUser, requireChef, async (req, res): Promise<void> => {
   const params = UpdateOrderStatusParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
@@ -163,7 +161,7 @@ router.patch("/chef/orders/:id/status", async (req, res): Promise<void> => {
   res.json(serializeOrder(updated, customer, chef));
 });
 
-router.get("/chef/stats", async (req, res): Promise<void> => {
+router.get("/chef/stats", attachUser, requireChef, async (req, res): Promise<void> => {
   const chef = req.currentUser!;
   const orderRows = await db
     .select()

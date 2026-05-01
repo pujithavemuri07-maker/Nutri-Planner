@@ -7,9 +7,7 @@ import { serializeOrder } from "../lib/serializers";
 
 const router: IRouter = Router();
 
-router.use(attachUser, requireAuth);
-
-router.get("/orders", async (req, res): Promise<void> => {
+router.get("/orders", attachUser, requireAuth, async (req, res): Promise<void> => {
   const user = req.currentUser!;
   const rows = await db
     .select({
@@ -39,7 +37,7 @@ router.get("/orders", async (req, res): Promise<void> => {
   );
 });
 
-router.post("/orders", async (req, res): Promise<void> => {
+router.post("/orders", attachUser, requireAuth, async (req, res): Promise<void> => {
   const parsed = CreateOrderBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -105,7 +103,7 @@ router.post("/orders", async (req, res): Promise<void> => {
   res.json(serializeOrder(order, user, chef));
 });
 
-router.get("/orders/:id", async (req, res): Promise<void> => {
+router.get("/orders/:id", attachUser, requireAuth, async (req, res): Promise<void> => {
   const params = GetOrderParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });

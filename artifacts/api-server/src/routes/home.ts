@@ -39,27 +39,30 @@ router.get("/home/featured", async (_req, res): Promise<void> => {
         kitchenName: r.chef.kitchenName,
       }),
     ),
-    topChefs: chefRows
-      .filter((c) => c.dishCount > 0)
-      .map((c) => ({
-        id: c.chef.id,
-        name: c.chef.name,
-        kitchenName: c.chef.kitchenName,
-        bio: c.chef.bio,
-        dishCount: c.dishCount,
-      })),
-    categories: [
-      { id: "veg", label: "Pure Veg", count: categoryCounts.veg ?? 0 },
-      { id: "non_veg", label: "Non-Veg", count: categoryCounts.non_veg ?? 0 },
-      { id: "diet", label: "Diet Meals", count: categoryCounts.diet ?? 0 },
-      { id: "gym", label: "High Protein", count: categoryCounts.gym ?? 0 },
-      { id: "elderly", label: "Elderly Care", count: categoryCounts.elderly ?? 0 },
-      { id: "tiffin", label: "Daily Tiffin", count: categoryCounts.tiffin ?? 0 },
+    topRatedDishes: featuredRows.map((r) =>
+      serializeDish(r.dish, {
+        name: r.chef.name,
+        kitchenName: r.chef.kitchenName,
+      }),
+    ),
+    topChefs: chefRows.map((c) => ({
+      id: c.chef.id,
+      phone: c.chef.phone,
+      name: c.chef.name,
+      role: c.chef.role,
+      kitchenName: c.chef.kitchenName,
+      bio: c.chef.bio,
+      address: c.chef.address,
+      createdAt: c.chef.createdAt,
+    })),
+    categoryCounts: [
+      { category: "veg" as const, count: categoryCounts.veg ?? 0 },
+      { category: "non_veg" as const, count: categoryCounts.non_veg ?? 0 },
+      { category: "diet" as const, count: categoryCounts.diet ?? 0 },
+      { category: "gym" as const, count: categoryCounts.gym ?? 0 },
+      { category: "elderly" as const, count: categoryCounts.elderly ?? 0 },
+      { category: "tiffin" as const, count: categoryCounts.tiffin ?? 0 },
     ],
-    stats: {
-      totalDishes: allDishes.length,
-      totalChefs: chefRows.length,
-    },
   });
 });
 
