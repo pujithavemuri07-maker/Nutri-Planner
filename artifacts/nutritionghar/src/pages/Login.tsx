@@ -188,7 +188,8 @@ export default function Login() {
                   )}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  This is a demo — we won't actually send an SMS. The OTP appears on the next screen.
+                  No real SMS is sent. A random OTP will appear on the next screen — or just type{" "}
+                  <span className="font-mono font-semibold">1234</span> to skip straight in.
                 </p>
               </motion.div>
             ) : (
@@ -199,9 +200,18 @@ export default function Login() {
                 exit={{ opacity: 0, x: -8 }}
                 className="space-y-4"
               >
-                <div className="rounded-xl bg-accent/15 border border-accent/30 p-3 text-center text-sm">
-                  Demo OTP for the hackathon: <span className="font-mono font-semibold">{demoOtp}</span>
-                  <div className="text-xs text-muted-foreground mt-1">Auto-filled below</div>
+                <div className="rounded-xl bg-accent/15 border border-accent/30 p-4 text-sm space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Your random OTP</span>
+                    <span className="font-mono text-lg font-bold tracking-widest">{demoOtp}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Universal demo bypass</span>
+                    <span className="font-mono text-lg font-bold tracking-widest">1234</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground pt-1">
+                    Use either code — the random one is pre-filled below.
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="otp">Enter OTP</Label>
